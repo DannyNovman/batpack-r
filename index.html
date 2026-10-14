@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BATpack-R</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --text-main: #1f2937;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        .machines-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .machine-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 12px 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            cursor: pointer;
+            border-left: 6px solid var(--text-muted);
+            position: relative;
+        }
+
+        .machine-card.inactive {
+            opacity: 0.5;
+            background-color: #f1f5f9;
+        }
+
+        .machine-card.status-teljes {
+            border-left-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .machine-card.status-hianyos {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .machine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .machine-info {
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-top: 5px;
+            line-height: 1.3;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .badge-teljes { background-color: var(--success-bg); color: var(--success-text); }
+        .badge-hianyos { background-color: var(--danger-bg); color: var(--danger-text); }
+
+        .time-stamp {
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: rgba(255,255,255,0.7);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .results-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .results-box h3 {
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-size: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #6b7280; width: auto; padding: 6px 12px; font-size: 0.8rem; }
+        .btn-danger { background-color: #dc2626; }
+        .btn-danger:hover { background-color: #b91c1c; }
+        
+        .btn-danger.armed {
+            background-color: #c2410c;
+            animation: pulse 0.5s 2;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .readonly-banner {
+            background-color: #fef3c7;
+            border: 1px solid #fde68a;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: #92400e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .codes-preview-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.80rem;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. FŐOLDAL -->
+    <div id="pageMain" class="page active">
+        <div style="font-weight: bold; font-size: 1.2rem; color: #2563eb; margin-bottom: 12px; text-align: center;">BATpack-R</div>
+        <div class="machines-list" id="machinesGrid">
+            <!-- JS tölti fel -->
+        </div>
+    </div>
+
+    <!-- 2. SZERKESZTŐ / KALKULÁTOR OLDAL -->
+    <div id="pageEditor" class="page">
+        <div class="view-header">
+            <h2 id="editorTitle" style="margin:0; font-size:1.1rem;">Gép szerkesztése</h2>
+            <button class="btn btn-secondary" onclick="goHome()">Vissza</button>
+        </div>
+
+        <div class="form-card">
+            <div id="readonlyBanner" class="readonly-banner" style="display: none;">
+                <span>Csak olvasható mód.</span>
+                <button class="btn btn-secondary" onclick="enableEditing()" style="padding: 4px 8px;">Szerkesztés</button>
+            </div>
+
+            <form id="calcForm" onsubmit="saveMachineData(event)">
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="poNumber">PO Szám:</label>
+                        <input type="text" id="poNumber" placeholder="pl. PO1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="foilType">Gyűjtő fólia:</label>
+                        <select id="foilType" onchange="calculate()">
+                            <option value="5">5-ös (120 can)</option>
+                            <option value="10">10-es (240 can)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="palletType">Raklap típusa:</label>
+                        <select id="palletType">
+                            <option value="EU">EU</option>
+                            <option value="IP">IP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="palletHeight">Raklap magasság:</label>
+                        <input type="number" id="palletHeight" min="1" max="15" value="4">
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="targetCartons">Terv (Karton):</label>
+                        <input type="number" id="targetCartons" min="0" value="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label for="producedCartons">Termelt (Karton):</label>
+                        <input type="number" id="producedCartons" min="0" value="0" oninput="calculate()">
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 12px 0;">
+
+                <label style="font-size:0.95rem; color:#1e40af; margin-bottom:8px;">Komissziós kocsi készlet:</label>
+                
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="stockRoof">Tető címke (db):</label>
+                        <input type="number" id="stockRoof" min="0" value="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockSide">Oldal címke (db):</label>
+                        <input type="number" id="stockSide" min="0" value="0" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="form-group">
+                        <label for="stockBottom">Alj címke (db):</label>
+                        <input type="number" id="stockBottom" min="0" value="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group" style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="hasSheet" onchange="toggleSheetInput(); calculate();">
+                            <label for="hasSheet" style="margin:0; cursor:pointer; font-size:0.8rem;">Lepedő szükséges</label>
+                        </div>
+                        <div id="sheetContainer" style="display: none; margin-top: 4px;">
+                            <label for="sheetRolls" style="font-size:0.75rem;">Lepedő készlet (db):</label>
+                            <input type="number" id="sheetRolls" min="0" step="1" value="0" oninput="calculate()" style="padding: 4px; font-size:0.85rem;" placeholder="pl. 7000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-box">
+                    <h3>Számítások</h3>
+                    <div class="result-item"><span>Hátralévő karton:</span><strong id="resRemainingCartons">0 ktn</strong></div>
+                    <div class="result-item"><span>Hátralévő termék:</span><strong id="resRemainingCan">0 can</strong></div>
+                    <hr style="border:0; border-top:1px solid #bfdbfe; margin: 6px 0;">
+                    <div class="result-item"><span>Tető státusz:</span><span id="resRoofStatus">-</span></div>
+                    <div class="result-item"><span>Oldal státusz:</span><span id="resSideStatus">-</span></div>
+                    <div class="result-item"><span>Alj státusz:</span><span id="resBottomStatus">-</span></div>
+                    <div id="sheetResultRow" class="result-item" style="display:none;"><span>Lepedő státusz:</span><span id="resSheetStatus">-</span></div>
+                </div>
+
+                <div class="codes-preview-box" id="codesPreviewBox">
+                    <strong>Rögzített cikkszámok:</strong> <span id="codesPreviewText">Még nincsenek megadva</span>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="openCodesView()" style="background-color: #4b5563; width: 100%; margin-bottom: 8px;">Cikkszámok megadása</button>
+
+                <button type="submit" class="btn" id="saveBtn">Mentés és Vissza</button>
+                <button type="button" class="btn btn-danger" id="clearBtn" onclick="clearMachineData()">Minden törlése / Alaphelyzet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. CIKKSZÁMOK OLDAL -->
+    <div id="pageCodes" class="page">
+        <div class="view-header">
+            <h2 style="margin:0; font-size:1.1rem;">Cikkszámok beállítása</h2>
+            <button class="btn btn-secondary" onclick="closeCodesView()">Vissza</button>
+        </div>
+        <div class="form-card">
+            <div class="form-group">
+                <label>Tető címke cikkszám:</label>
+                <input type="text" id="codeRoof" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Oldal címke cikkszám:</label>
+                <input type="text" id="codeSide" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Alj címke cikkszám:</label>
+                <input type="text" id="codeBottom" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Karton cikkszám:</label>
+                <input type="text" id="codeCarton" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Gyűjtőfólia cikkszám:</label>
+                <input type="text" id="codeFoil" placeholder="Cikkszám...">
+            </div>
+            <button type="button" class="btn" onclick="saveCodesAndReturn()">Cikkszámok mentése</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const machineIds = ["4810", "4820", "4830", "4840", "4850", "4860", "4870", "4880", "4950", "4960"];
+    let currentMachine = null;
+    let db = {};
+    let deleteState = false;
+    let deleteTimer = null;
+
+    try {
+        db = JSON.parse(localStorage.getItem('bat_logistics_data')) || {};
+    } catch (e) {
+        db = {};
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function renderMainGrid() {
+        const grid = document.getElementById('machinesGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        machineIds.forEach(id => {
+            const data = db[id];
+            const card = document.createElement('div');
+            
+            if (!data || data.isCleared) {
+                card.className = 'machine-card inactive';
+                card.innerHTML = `
+                    <div class="machine-header"><span>Gép ${id}</span></div>
+                    <div class="machine-info">Nincs aktív adat</div>
+                `;
+            } else {
+                const statusClass = data.isComplete ? 'status-teljes' : 'status-hianyos';
+                const badgeText = data.isComplete ? 'Teljes' : 'Hiányos alapanyag!';
+                const badgeClass = data.isComplete ? 'badge-teljes' : 'badge-hianyos';
+
+                let codesText = '';
+                if (data.codes && (data.codes.roof || data.codes.side || data.codes.bottom || data.codes.carton || data.codes.foil)) {
+                    codesText = `<div style="font-size:0.75rem; color:#374151; margin-top:4px; border-top:1px dashed #d1d5db; padding-top:2px;">
+                        <strong>Cikkszámok:</strong> T:${data.codes.roof||'-'} | O:${data.codes.side||'-'} | A:${data.codes.bottom||'-'} | K:${data.codes.carton||'-'} | F:${data.codes.foil||'-'}
+                    </div>`;
+                }
+
+                card.className = `machine-card ${statusClass}`;
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="machine-header"><span>Gép ${id}</span></div>
+                        <div class="time-stamp">🕒 ${data.timestamp || '--:--'}</div>
+                    </div>
+                    <div class="machine-info">
+                        <strong>PO:</strong> ${data.poNumber || '-'}&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Raklap:</strong> ${data.palletType}-${data.palletHeight}<br>
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        ${codesText}
+                    </div>
+                `;
+            }
+
+            card.onclick = () => openEditor(id);
+            grid.appendChild(card);
+        });
+    }
+
+    function openEditor(id) {
+        currentMachine = id;
+        document.getElementById('editorTitle').innerText = `Gép szerkesztése: ${id}`;
+        resetDeleteButton();
+        showPage('pageEditor');
+
+        const data = db[id];
+        if (data && !data.isCleared) {
+            document.getElementById('poNumber').value = data.poNumber || '';
+            document.getElementById('palletType').value = data.palletType || 'EU';
+            document.getElementById('palletHeight').value = data.palletHeight || 4;
+            document.getElementById('foilType').value = data.foilType || '5';
+            document.getElementById('targetCartons').value = data.targetCartons || 0;
+            document.getElementById('producedCartons').value = data.producedCartons || 0;
+            document.getElementById('stockRoof').value = data.stockRoof || 0;
+            document.getElementById('stockSide').value = data.stockSide || 0;
+            document.getElementById('stockBottom').value = data.stockBottom || 0;
+
+            document.getElementById('hasSheet').checked = data.hasSheet || false;
+            document.getElementById('sheetRolls').value = data.sheetRolls || 0;
+            toggleSheetInput();
+
+            if (data.codes) {
+                document.getElementById('codeRoof').value = data.codes.roof || '';
+                document.getElementById('codeSide').value = data.codes.side || '';
+                document.getElementById('codeBottom').value = data.codes.bottom || '';
+                document.getElementById('codeCarton').value = data.codes.carton || '';
+                document.getElementById('codeFoil').value = data.codes.foil || '';
+            } else {
+                clearCodesInputs();
+            }
+
+            setFormReadonly(true);
+            document.getElementById('readonlyBanner').style.display = 'flex';
+        } else {
+            document.getElementById('calcForm').reset();
+            clearCodesInputs();
+            toggleSheetInput();
+            setFormReadonly(false);
+            document.getElementById('readonlyBanner').style.display = 'none';
+        }
+        updateCodesPreview();
+        calculate();
+    }
+
+    function clearCodesInputs() {
+        document.getElementById('codeRoof').value = '';
+        document.getElementById('codeSide').value = '';
+        document.getElementById('codeBottom').value = '';
+        document.getElementById('codeCarton').value = '';
+        document.getElementById('codeFoil').value = '';
+    }
+
+    function updateCodesPreview() {
+        const r = document.getElementById('codeRoof').value;
+        const s = document.getElementById('codeSide').value;
+        const b = document.getElementById('codeBottom').value;
+        const c = document.getElementById('codeCarton').value;
+        const f = document.getElementById('codeFoil').value;
+
+        if (r || s || b || c || f) {
+            document.getElementById('codesPreviewText').innerHTML = `Tető: ${r||'-'} | Oldal: ${s||'-'} | Alj: ${b||'-'} | Karton: ${c||'-'} | Fólia: ${f||'-'}`;
+        } else {
+            document.getElementById('codesPreviewText').innerText = `Még nincsenek megadva`;
+        }
+    }
+
+    function toggleSheetInput() {
+        const hasSheet = document.getElementById('hasSheet').checked;
+        document.getElementById('sheetContainer').style.display = hasSheet ? 'block' : 'none';
+        document.getElementById('sheetResultRow').style.display = hasSheet ? 'flex' : 'none';
+    }
+
+    function setFormReadonly(isReadonly) {
+        const elements = document.getElementById('calcForm').elements;
+        for (let el of elements) {
+            if (el.type !== 'button' && el.type !== 'submit') {
+                el.disabled = isReadonly;
+            }
+        }
+        document.getElementById('saveBtn').style.display = isReadonly ? 'none' : 'block';
+    }
+
+    function enableEditing() {
+        setFormReadonly(false);
+        document.getElementById('readonlyBanner').style.display = 'none';
+    }
+
+    function openCodesView() {
+        showPage('pageCodes');
+    }
+
+    function saveCodesAndReturn() {
+        if (!db[currentMachine] || db[currentMachine].isCleared) {
+            db[currentMachine] = { isCleared: false, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isComplete: false };
+        }
+        
+        db[currentMachine].codes = {
+            roof: document.getElementById('codeRoof').value,
+            side: document.getElementById('codeSide').value,
+            bottom: document.getElementById('codeBottom').value,
+            carton: document.getElementById('codeCarton').value,
+            foil: document.getElementById('codeFoil').value
+        };
+
+        try {
+            localStorage.setItem('bat_logistics_data', JSON.stringify(db));
+        } catch(e) {}
+
+        updateCodesPreview();
+        showPage('pageEditor');
+    }
+
+    function closeCodesView() {
+        showPage('pageEditor');
+    }
+
+    function goHome() {
+        resetDeleteButton();
+        showPage('pageMain');
+        renderMainGrid();
+    }
+
+    function calculate() {
+        const target = parseFloat(document.getElementById('targetCartons').value) || 0;
+        const produced = parseFloat(document.getElementById('producedCartons').value) || 0;
+        const foil = parseInt(document.getElementById('foilType').value) || 5;
+
+        const remainingCartons = Math.max(0, target - produced);
+        const cansPerCarton = 240; // Alapértelmezett doboz/can szorzó a kartonhoz
+        const remainingCans = remainingCartons * cansPerCarton;
+
+        document.getElementById('resRemainingCartons').innerText = `${remainingCartons} ktn`;
+        document.getElementById('resRemainingCan').innerText = `${remainingCans} can`;
+
+        const requiredLabels = remainingCans;
+        
+        const stockRoof = parseFloat(document.getElementById('stockRoof').value) || 0;
+        const stockSide = parseFloat(document.getElementById('stockSide').value) || 0;
+        const stockBottom = parseFloat(document.getElementById('stockBottom').value) || 0;
+
+        const checkStatus = (stock, required) => {
+            const diff = stock - required;
+            if (diff >= 0) {
+                return `<span style="color: #059669; font-weight: bold;">Elég (+${diff} db)</span>`;
+            } else {
+                return `<span style="color: #dc2626; font-weight: bold;">Hiányzik ${Math.abs(diff)} db</span>`;
+            }
+        };
+
+        document.getElementById('resRoofStatus').innerHTML = checkStatus(stockRoof, requiredLabels);
+        document.getElementById('resSideStatus').innerHTML = checkStatus(stockSide, requiredLabels);
+        document.getElementById('resBottomStatus').innerHTML = checkStatus(stockBottom, requiredLabels);
+
+        // Lepedő: helyes arányos számítás (remainingCans / foil) függetlenül a karton-can szorzótól
+        const hasSheet = document.getElementById('hasSheet').checked;
+        if (hasSheet) {
+            const stockSheets = parseFloat(document.getElementById('sheetRolls').value) || 0;
+            const requiredSheets = remainingCans / foil; 
+            
+            const diffSheets = stockSheets - requiredSheets;
+
+            if (diffSheets >= 0) {
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #059669; font-weight: bold;">Elég (+${Math.round(diffSheets)} db)</span>`;
+            } else {
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #dc2626; font-weight: bold;">Hiányzik ${Math.abs(Math.round(diffSheets))} db</span>`;
+            }
+        }
+    }
+
+    function resetDeleteButton() {
+        deleteState = false;
+        clearTimeout(deleteTimer);
+        const btn = document.getElementById('clearBtn');
+        if (btn) {
+            btn.innerText = "Minden törlése / Alaphelyzet";
+            btn.classList.remove('armed');
+        }
+    }
+
+    function clearMachineData() {
+        const btn = document.getElementById('clearBtn');
+        
+        if (!deleteState) {
+            deleteState = true;
+            if (btn) {
+                btn.innerText = "⚠️ Biztos törlöd? Kattints újra!";
+                btn.classList.add('armed');
+            }
+            
+            deleteTimer = setTimeout(() => {
+                resetDeleteButton();
+            }, 1000);
+        } else {
+            clearTimeout(deleteTimer);
+            db[currentMachine] = { isCleared: true };
+            try {
+                localStorage.setItem('bat_logistics_data', JSON.stringify(db));
+            } catch(e) {}
+            resetDeleteButton();
+            goHome();
+        }
+    }
+
+    function saveMachineData(e) {
+        e.preventDefault();
+
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const target = parseFloat(document.getElementById('targetCartons').value) || 0;
+        const produced = parseFloat(document.getElementById('producedCartons').value) || 0;
+        const foil = parseInt(document.getElementById('foilType').value) || 5;
+        const remainingCartons = Math.max(0, target - produced);
+        const remainingCans = remainingCartons * 240;
+        const requiredLabels = remainingCans;
+
+        const stockRoof = parseFloat(document.getElementById('stockRoof').value) || 0;
+        const stockSide = parseFloat(document.getElementById('stockSide').value) || 0;
+        const stockBottom = parseFloat(document.getElementById('stockBottom').value) || 0;
+
+        let isComplete = (stockRoof >= requiredLabels) && (stockSide >= requiredLabels) && (stockBottom >= requiredLabels);
+
+        const hasSheet = document.getElementById('hasSheet').checked;
+        if (hasSheet) {
+            const stockSheets = parseFloat(document.getElementById('sheetRolls').value) || 0;
+            const requiredSheets = remainingCans / foil;
+            if (stockSheets < requiredSheets) {
+                isComplete = false;
+            }
+        }
+
+        db[currentMachine] = {
+            isCleared: false,
+            poNumber: document.getElementById('poNumber').value,
+            palletType: document.getElementById('palletType').value,
+            palletHeight: document.getElementById('palletHeight').value,
+            foilType: foil,
+            targetCartons: target,
+            producedCartons: produced,
+            stockRoof: stockRoof,
+            stockSide: stockSide,
+            stockBottom: stockBottom,
+            hasSheet: hasSheet,
+            sheetRolls: document.getElementById('sheetRolls').value,
+            codes: {
+                roof: document.getElementById('codeRoof').value,
+                side: document.getElementById('codeSide').value,
+                bottom: document.getElementById('codeBottom').value,
+                carton: document.getElementById('codeCarton').value,
+                foil: document.getElementById('codeFoil').value
+            },
+            timestamp: timeString,
+            isComplete: isComplete
+        };
+
+        try {
+            localStorage.setItem('bat_logistics_data', JSON.stringify(db));
+        } catch(e) {}
+        
+        goHome();
+    }
+
+    renderMainGrid();
+</script>
+
+</body>
+</html>
