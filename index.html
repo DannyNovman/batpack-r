@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BATpack-R</title>
-
-    <!-- Mobil App / PWA beállítások (iOS & Android) - Saját icon.png-vel -->
+    
+    <!-- Mobil App / PWA beállítások (iOS & Android) - Sötét Mód -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,18 +13,18 @@
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
-    
+
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --primary: #2563eb;
-            --success-bg: #d1fae5;
-            --success-text: #065f46;
-            --danger-bg: #fee2e2;
-            --danger-text: #991b1b;
-            --text-main: #1f2937;
-            --text-muted: #9ca3af;
+            --bg-color: #0f172a;        /* Mély sötétkék-szürke háttér */
+            --card-bg: #1e293b;       /* Sötét kártya háttér */
+            --primary: #3b82f6;       /* Élénkebb kék kiemelés */
+            --success-bg: #064e3b;    /* Sötét zöld háttér teljes státuszhoz */
+            --success-text: #34d399;  /* Világos zöld szöveg */
+            --danger-bg: #7f1d1d;     /* Sötét piros háttér hiányhoz */
+            --danger-text: #fca5a5;   /* Világos piros szöveg */
+            --text-main: #f8fafc;     /* Tiszta fehér/világos szöveg */
+            --text-muted: #64748b;    /* Halványabb szürke */
         }
 
         body {
@@ -33,6 +33,8 @@
             color: var(--text-main);
             margin: 0;
             padding: 10px;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .container {
@@ -57,25 +59,25 @@
             background: var(--card-bg);
             border-radius: 8px;
             padding: 12px 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
             cursor: pointer;
             border-left: 6px solid var(--text-muted);
             position: relative;
         }
 
         .machine-card.inactive {
-            opacity: 0.5;
-            background-color: #f1f5f9;
+            opacity: 0.6;
+            background-color: #162032;
         }
 
         .machine-card.status-teljes {
             border-left-color: #10b981;
-            background-color: #f0fdf4;
+            background-color: #062c22;
         }
 
         .machine-card.status-hianyos {
             border-left-color: #ef4444;
-            background-color: #fef2f2;
+            background-color: #3b1111;
         }
 
         .machine-header {
@@ -88,7 +90,7 @@
 
         .machine-info {
             font-size: 0.85rem;
-            color: #4b5563;
+            color: #cbd5e1;
             margin-top: 5px;
             line-height: 1.3;
         }
@@ -107,8 +109,8 @@
 
         .time-stamp {
             font-size: 0.75rem;
-            color: #6b7280;
-            background: rgba(255,255,255,0.7);
+            color: #94a3b8;
+            background: rgba(15,23,42,0.6);
             padding: 1px 5px;
             border-radius: 4px;
         }
@@ -118,7 +120,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #334155;
             padding-bottom: 10px;
             background: var(--card-bg);
             padding: 10px 15px;
@@ -129,7 +131,7 @@
             background: var(--card-bg);
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .form-group {
@@ -141,15 +143,24 @@
             font-weight: 600;
             margin-bottom: 4px;
             font-size: 0.85rem;
+            color: #e2e8f0;
         }
 
         input, select {
             width: 100%;
             padding: 8px;
-            border: 1px solid #d1d5db;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            color: #f8fafc;
             border-radius: 6px;
             font-size: 0.95rem;
             box-sizing: border-box;
+        }
+
+        input:disabled, select:disabled {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border-color: #334155;
         }
 
         .row-2 {
@@ -159,8 +170,8 @@
         }
 
         .results-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+            background: #0f172a;
+            border: 1px solid #3b82f6;
             padding: 12px;
             border-radius: 6px;
             margin: 15px 0;
@@ -169,7 +180,7 @@
 
         .results-box h3 {
             margin: 0 0 8px 0;
-            color: #1e40af;
+            color: #60a5fa;
             font-size: 1rem;
         }
 
@@ -177,6 +188,7 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
+            color: #e2e8f0;
         }
 
         .btn {
@@ -193,8 +205,8 @@
             margin-bottom: 8px;
         }
 
-        .btn:hover { background-color: #1d4ed8; }
-        .btn-secondary { background-color: #6b7280; width: auto; padding: 6px 12px; font-size: 0.8rem; }
+        .btn:hover { background-color: #2563eb; }
+        .btn-secondary { background-color: #475569; width: auto; padding: 6px 12px; font-size: 0.8rem; color: #f8fafc; }
         .btn-danger { background-color: #dc2626; }
         .btn-danger:hover { background-color: #b91c1c; }
         
@@ -219,26 +231,26 @@
         }
 
         .readonly-banner {
-            background-color: #fef3c7;
-            border: 1px solid #fde68a;
+            background-color: #451a03;
+            border: 1px solid #78350f;
             padding: 8px;
             border-radius: 6px;
             margin-bottom: 12px;
             font-size: 0.85rem;
-            color: #92400e;
+            color: #fde68a;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .codes-preview-box {
-            background: #f8fafc;
-            border: 1px dashed #cbd5e1;
+            background: #0f172a;
+            border: 1px dashed #475569;
             padding: 8px 10px;
             border-radius: 6px;
             margin: 15px 0;
             font-size: 0.80rem;
-            color: #475569;
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -248,7 +260,7 @@
 
     <!-- 1. FŐOLDAL -->
     <div id="pageMain" class="page active">
-        <div style="font-weight: bold; font-size: 1.2rem; color: #2563eb; margin-bottom: 12px; text-align: center;">BATpack-R</div>
+        <div style="font-weight: bold; font-size: 1.2rem; color: #60a5fa; margin-bottom: 12px; text-align: center;">BATpack-R (Sötét Mód)</div>
         <div class="machines-list" id="machinesGrid">
             <!-- JS tölti fel -->
         </div>
@@ -257,7 +269,7 @@
     <!-- 2. SZERKESZTŐ / KALKULÁTOR OLDAL -->
     <div id="pageEditor" class="page">
         <div class="view-header">
-            <h2 id="editorTitle" style="margin:0; font-size:1.1rem;">Gép szerkesztése</h2>
+            <h2 id="editorTitle" style="margin:0; font-size:1.1rem; color:#f8fafc;">Gép szerkesztése</h2>
             <button class="btn btn-secondary" onclick="goHome()">Vissza</button>
         </div>
 
@@ -307,9 +319,9 @@
                     </div>
                 </div>
 
-                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 12px 0;">
+                <hr style="border: 0; border-top: 1px solid #334155; margin: 12px 0;">
 
-                <label style="font-size:0.95rem; color:#1e40af; margin-bottom:8px;">Komissziós kocsi készlet:</label>
+                <label style="font-size:0.95rem; color:#60a5fa; margin-bottom:8px;">Komissziós kocsi készlet:</label>
                 
                 <div class="row-2">
                     <div class="form-group">
@@ -327,7 +339,7 @@
                         <label for="stockBottom">Alj címke (db):</label>
                         <input type="number" id="stockBottom" min="0" value="0" oninput="calculate()">
                     </div>
-                    <div class="form-group" style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <div class="form-group" style="background: #0f172a; padding: 6px; border-radius: 6px; border: 1px solid #334155;">
                         <div class="checkbox-group">
                             <input type="checkbox" id="hasSheet" onchange="toggleSheetInput(); calculate();">
                             <label for="hasSheet" style="margin:0; cursor:pointer; font-size:0.8rem;">Lepedő szükséges</label>
@@ -343,7 +355,7 @@
                     <h3>Számítások</h3>
                     <div class="result-item"><span>Hátralévő karton:</span><strong id="resRemainingCartons">0 ktn</strong></div>
                     <div class="result-item"><span>Hátralévő termék:</span><strong id="resRemainingCan">0 can</strong></div>
-                    <hr style="border:0; border-top:1px solid #bfdbfe; margin: 6px 0;">
+                    <hr style="border:0; border-top:1px solid #334155; margin: 6px 0;">
                     <div class="result-item"><span>Tető státusz:</span><span id="resRoofStatus">-</span></div>
                     <div class="result-item"><span>Oldal státusz:</span><span id="resSideStatus">-</span></div>
                     <div class="result-item"><span>Alj státusz:</span><span id="resBottomStatus">-</span></div>
@@ -354,7 +366,7 @@
                     <strong>Rögzített cikkszámok:</strong> <span id="codesPreviewText">Még nincsenek megadva</span>
                 </div>
 
-                <button type="button" class="btn btn-secondary" onclick="openCodesView()" style="background-color: #4b5563; width: 100%; margin-bottom: 8px;">Cikkszámok megadása</button>
+                <button type="button" class="btn btn-secondary" onclick="openCodesView()" style="background-color: #334155; width: 100%; margin-bottom: 8px;">Cikkszámok megadása</button>
 
                 <button type="submit" class="btn" id="saveBtn">Mentés és Vissza</button>
                 <button type="button" class="btn btn-danger" id="clearBtn" onclick="clearMachineData()">Minden törlése / Alaphelyzet</button>
@@ -365,7 +377,7 @@
     <!-- 3. CIKKSZÁMOK OLDAL -->
     <div id="pageCodes" class="page">
         <div class="view-header">
-            <h2 style="margin:0; font-size:1.1rem;">Cikkszámok beállítása</h2>
+            <h2 style="margin:0; font-size:1.1rem; color:#f8fafc;">Cikkszámok beállítása</h2>
             <button class="btn btn-secondary" onclick="closeCodesView()">Vissza</button>
         </div>
         <div class="form-card">
@@ -436,7 +448,7 @@
 
                 let codesText = '';
                 if (data.codes && (data.codes.roof || data.codes.side || data.codes.bottom || data.codes.carton || data.codes.foil)) {
-                    codesText = `<div style="font-size:0.75rem; color:#374151; margin-top:4px; border-top:1px dashed #d1d5db; padding-top:2px;">
+                    codesText = `<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px; border-top:1px dashed #334155; padding-top:2px;">
                         <strong>Cikkszámok:</strong> T:${data.codes.roof||'-'} | O:${data.codes.side||'-'} | A:${data.codes.bottom||'-'} | K:${data.codes.carton||'-'} | F:${data.codes.foil||'-'}
                     </div>`;
                 }
@@ -590,7 +602,7 @@
         const foil = parseInt(document.getElementById('foilType').value) || 5;
 
         const remainingCartons = Math.max(0, target - produced);
-        const cansPerCarton = 240; // Alapértelmezett doboz/can szorzó a kartonhoz
+        const cansPerCarton = 240; 
         const remainingCans = remainingCartons * cansPerCarton;
 
         document.getElementById('resRemainingCartons').innerText = `${remainingCartons} ktn`;
@@ -605,9 +617,9 @@
         const checkStatus = (stock, required) => {
             const diff = stock - required;
             if (diff >= 0) {
-                return `<span style="color: #059669; font-weight: bold;">Elég (+${diff} db)</span>`;
+                return `<span style="color: #34d399; font-weight: bold;">Elég (+${diff} db)</span>`;
             } else {
-                return `<span style="color: #dc2626; font-weight: bold;">Hiányzik ${Math.abs(diff)} db</span>`;
+                return `<span style="color: #fca5a5; font-weight: bold;">Hiányzik ${Math.abs(diff)} db</span>`;
             }
         };
 
@@ -615,7 +627,6 @@
         document.getElementById('resSideStatus').innerHTML = checkStatus(stockSide, requiredLabels);
         document.getElementById('resBottomStatus').innerHTML = checkStatus(stockBottom, requiredLabels);
 
-        // Lepedő: helyes arányos számítás (remainingCans / foil) függetlenül a karton-can szorzótól
         const hasSheet = document.getElementById('hasSheet').checked;
         if (hasSheet) {
             const stockSheets = parseFloat(document.getElementById('sheetRolls').value) || 0;
@@ -624,9 +635,9 @@
             const diffSheets = stockSheets - requiredSheets;
 
             if (diffSheets >= 0) {
-                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #059669; font-weight: bold;">Elég (+${Math.round(diffSheets)} db)</span>`;
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #34d399; font-weight: bold;">Elég (+${Math.round(diffSheets)} db)</span>`;
             } else {
-                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #dc2626; font-weight: bold;">Hiányzik ${Math.abs(Math.round(diffSheets))} db</span>`;
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #fca5a5; font-weight: bold;">Hiányzik ${Math.abs(Math.round(diffSheets))} db</span>`;
             }
         }
     }
@@ -653,7 +664,7 @@
             
             deleteTimer = setTimeout(() => {
                 resetDeleteButton();
-            }, 1000);
+            }, 2000);
         } else {
             clearTimeout(deleteTimer);
             db[currentMachine] = { isCleared: true };
