@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BATpack-R</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -124,6 +124,8 @@
             -webkit-font-smoothing: antialiased;
             transition: background-color 0.3s ease, color 0.3s ease;
             min-height: 100vh;
+            /* Prevent overscroll bounce on some mobiles */
+            overscroll-behavior: none;
         }
 
         /* Cyberpunk atmospheric background (statikus) */
@@ -235,7 +237,7 @@
             box-shadow: var(--shadow);
             cursor: pointer;
             border: var(--card-border);
-            border-left: 7px solid var(--text-muted); /* ← vastagabb bal szegély */
+            border-left: 7px solid var(--text-muted);
             transition: transform 0.15s ease, box-shadow 0.2s ease;
             position: relative;
         }
@@ -251,7 +253,7 @@
             border-left-color: #64748b;
         }
 
-        /* ===== VILÁGOS GRADIENSEK + vastag bal szegély ===== */
+        /* ===== VILÁGOS ===== */
         [data-theme="light"] .machine-card.status-teljes {
             border-left: 7px solid #10b981;
             background: linear-gradient(to right, #f0fdf4 0%, #ffffff 48%);
@@ -261,7 +263,7 @@
             background: linear-gradient(to right, #fef2f2 0%, #ffffff 48%);
         }
 
-        /* ===== SÖTÉT GRADIENSEK + vastag bal szegély ===== */
+        /* ===== SÖTÉT ===== */
         [data-theme="dark"] .machine-card.status-teljes {
             border-left: 7px solid #10b981;
             background: linear-gradient(to right, #064e3b 0%, #1e293b 55%);
@@ -271,7 +273,7 @@
             background: linear-gradient(to right, #7f1d1d 0%, #1e293b 55%);
         }
 
-        /* ===== CYBERPUNK KÁRTYÁK ===== */
+        /* ===== CYBERPUNK ===== */
         [data-theme="cyberpunk"] .machine-card {
             background: linear-gradient(145deg, #0d0818 0%, #110a1f 100%);
             border-left: 7px solid var(--text-muted);
@@ -537,22 +539,30 @@
             box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
         }
 
+        /* ===== TÖRLÉS GOMB – mindig piros marad ===== */
         .btn-danger {
-            background-color: var(--danger);
-            color: #ffffff;
+            background-color: var(--danger) !important;
+            color: #ffffff !important;
         }
-        .btn-danger:hover { filter: brightness(1.1); }
-
-        [data-theme="cyberpunk"] .btn-danger {
-            background: linear-gradient(135deg, #ff2a6d, #c41e5a);
-            box-shadow: 0 0 20px rgba(255, 42, 109, 0.5);
-        }
-        [data-theme="cyberpunk"] .btn-danger:hover {
-            box-shadow: 0 0 30px rgba(255, 42, 109, 0.7);
+        .btn-danger:hover {
+            filter: brightness(1.1);
         }
 
         .btn-danger.armed {
+            background-color: #c2410c !important; /* narancs-piros figyelmeztető */
+            color: #ffffff !important;
             animation: pulse 0.5s 2;
+        }
+
+        [data-theme="cyberpunk"] .btn-danger {
+            background: linear-gradient(135deg, #ff2a6d, #c41e5a) !important;
+            box-shadow: 0 0 20px rgba(255, 42, 109, 0.5);
+            color: #ffffff !important;
+        }
+        [data-theme="cyberpunk"] .btn-danger.armed {
+            background: linear-gradient(135deg, #ff6b35, #ff2a6d) !important;
+            box-shadow: 0 0 25px rgba(255, 107, 53, 0.6);
+            color: #ffffff !important;
         }
 
         @keyframes pulse {
