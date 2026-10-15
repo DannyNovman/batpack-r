@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BATpack-R</title>
-    
-    <!-- Mobil App / PWA beállítások (iOS & Android) - Sötét Mód -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,401 +11,805 @@
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
-
+    
     <style>
-        :root {
-            --bg-color: #0f172a;        /* Mély sötétkék-szürke háttér */
-            --card-bg: #1e293b;       /* Sötét kártya háttér */
-            --primary: #3b82f6;       /* Élénkebb kék kiemelés */
-            --success-bg: #064e3b;    /* Sötét zöld háttér teljes státuszhoz */
-            --success-text: #34d399;  /* Világos zöld szöveg */
-            --danger-bg: #7f1d1d;     /* Sötét piros háttér hiányhoz */
-            --danger-text: #fca5a5;   /* Világos piros szöveg */
-            --text-main: #f8fafc;     /* Tiszta fehér/világos szöveg */
-            --text-muted: #64748b;    /* Halványabb szürke */
+        /* ===== LIGHT ===== */
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #059669;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --warning-bg: #fef3c7;
+            --warning-text: #92400e;
+            --text-main: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --input-bg: #ffffff;
+            --results-bg: #eff6ff;
+            --results-border: #bfdbfe;
+            --results-title: #1e40af;
+            --codes-bg: #f8fafc;
+            --sheet-bg: #f8fafc;
+            --timestamp-bg: #f1f5f9;
+            --inactive-bg: #f8fafc;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.1);
+            --card-border: 1px solid transparent;
+            --btn-text: #ffffff;
         }
+
+        /* ===== DARK ===== */
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --success: #10b981;
+            --success-bg: #064e3b;
+            --success-text: #6ee7b7;
+            --danger: #ef4444;
+            --danger-bg: #7f1d1d;
+            --danger-text: #fca5a5;
+            --warning-bg: #78350f;
+            --warning-text: #fde68a;
+            --text-main: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --input-bg: #0f172a;
+            --results-bg: #1e3a5f;
+            --results-border: #1e40af;
+            --results-title: #93c5fd;
+            --codes-bg: #0f172a;
+            --sheet-bg: #0f172a;
+            --timestamp-bg: #334155;
+            --inactive-bg: #1e293b;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
+            --card-border: 1px solid transparent;
+            --btn-text: #ffffff;
+        }
+
+        /* ===== CYBERPUNK ===== */
+        [data-theme="cyberpunk"] {
+            --bg-color: #05030a;
+            --card-bg: #0d0818;
+            --primary: #00f0ff;
+            --primary-hover: #67f6ff;
+            --success: #39ff14;
+            --success-bg: #0a2e0a;
+            --success-text: #39ff14;
+            --danger: #ff2a6d;
+            --danger-bg: #3b0a1a;
+            --danger-text: #ff2a6d;
+            --warning-bg: #2a1a00;
+            --warning-text: #ff9f1c;
+            --text-main: #e0f7fa;
+            --text-secondary: #a5b4c8;
+            --text-muted: #6b7280;
+            --border: #1a1030;
+            --input-bg: #08051a;
+            --results-bg: #0a1525;
+            --results-border: #00f0ff;
+            --results-title: #00f0ff;
+            --codes-bg: #08051a;
+            --sheet-bg: #08051a;
+            --timestamp-bg: #120a22;
+            --inactive-bg: #0a0614;
+            --radius: 4px;
+            --shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            --shadow-hover: 0 0 28px rgba(0, 240, 255, 0.4), 0 0 50px rgba(255, 42, 109, 0.15);
+            --card-border: 1px solid rgba(0, 240, 255, 0.3);
+            --btn-text: #05030a;
+        }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 10px;
-            -webkit-user-select: none;
-            user-select: none;
+            padding: 12px;
+            line-height: 1.45;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* Cyberpunk atmospheric background (statikus) */
+        [data-theme="cyberpunk"] body {
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(0, 240, 255, 0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255, 42, 109, 0.08) 0%, transparent 50%),
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.25s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
+        /* HEADER */
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px 0 6px;
+            position: relative;
+        }
+
+        .app-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        [data-theme="cyberpunk"] .app-title {
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 1.6rem;
+            background: linear-gradient(90deg, #00f0ff, #ff2a6d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.7));
+        }
+
+        .app-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        [data-theme="cyberpunk"] .app-subtitle {
+            color: #ff2a6d;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            text-shadow: 0 0 8px rgba(255, 42, 109, 0.6);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        [data-theme="cyberpunk"] .theme-toggle {
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.45);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        /* MACHINE CARDS */
         .machines-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 13px;
         }
 
         .machine-card {
             background: var(--card-bg);
-            border-radius: 8px;
-            padding: 12px 15px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
             cursor: pointer;
-            border-left: 6px solid var(--text-muted);
+            border: var(--card-border);
+            border-left: 7px solid var(--text-muted); /* ← vastagabb bal szegély */
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
             position: relative;
         }
 
+        .machine-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
         .machine-card.inactive {
-            opacity: 0.6;
-            background-color: #162032;
+            opacity: 0.45;
+            background-color: var(--inactive-bg);
+            border-left-color: #64748b;
         }
 
-        .machine-card.status-teljes {
-            border-left-color: #10b981;
-            background-color: #062c22;
+        /* ===== VILÁGOS GRADIENSEK + vastag bal szegély ===== */
+        [data-theme="light"] .machine-card.status-teljes {
+            border-left: 7px solid #10b981;
+            background: linear-gradient(to right, #f0fdf4 0%, #ffffff 48%);
+        }
+        [data-theme="light"] .machine-card.status-hianyos {
+            border-left: 7px solid #ef4444;
+            background: linear-gradient(to right, #fef2f2 0%, #ffffff 48%);
         }
 
-        .machine-card.status-hianyos {
-            border-left-color: #ef4444;
-            background-color: #3b1111;
+        /* ===== SÖTÉT GRADIENSEK + vastag bal szegély ===== */
+        [data-theme="dark"] .machine-card.status-teljes {
+            border-left: 7px solid #10b981;
+            background: linear-gradient(to right, #064e3b 0%, #1e293b 55%);
+        }
+        [data-theme="dark"] .machine-card.status-hianyos {
+            border-left: 7px solid #ef4444;
+            background: linear-gradient(to right, #7f1d1d 0%, #1e293b 55%);
+        }
+
+        /* ===== CYBERPUNK KÁRTYÁK ===== */
+        [data-theme="cyberpunk"] .machine-card {
+            background: linear-gradient(145deg, #0d0818 0%, #110a1f 100%);
+            border-left: 7px solid var(--text-muted);
+        }
+
+        [data-theme="cyberpunk"] .machine-card.status-teljes {
+            border-left: 7px solid #39ff14;
+            box-shadow: 
+                0 0 18px rgba(57, 255, 20, 0.25),
+                inset 0 0 20px rgba(57, 255, 20, 0.05);
+        }
+        [data-theme="cyberpunk"] .machine-card.status-hianyos {
+            border-left: 7px solid #ff2a6d;
+            box-shadow: 
+                0 0 18px rgba(255, 42, 109, 0.3),
+                inset 0 0 20px rgba(255, 42, 109, 0.06);
+        }
+
+        [data-theme="cyberpunk"] .machine-card:hover {
+            box-shadow: 
+                0 0 30px rgba(0, 240, 255, 0.35),
+                0 0 60px rgba(255, 42, 109, 0.15);
         }
 
         .machine-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        [data-theme="cyberpunk"] .machine-header {
+            letter-spacing: 0.04em;
         }
 
         .machine-info {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            margin-top: 5px;
-            line-height: 1.3;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.4;
         }
 
         .badge {
             display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-top: 4px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 6px;
         }
 
-        .badge-teljes { background-color: var(--success-bg); color: var(--success-text); }
-        .badge-hianyos { background-color: var(--danger-bg); color: var(--danger-text); }
+        .badge-teljes {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+        .badge-hianyos {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        [data-theme="cyberpunk"] .badge-teljes {
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.55);
+            border: 1px solid rgba(57, 255, 20, 0.5);
+            text-shadow: 0 0 6px rgba(57, 255, 20, 0.8);
+        }
+        [data-theme="cyberpunk"] .badge-hianyos {
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.55);
+            border: 1px solid rgba(255, 42, 109, 0.5);
+            text-shadow: 0 0 6px rgba(255, 42, 109, 0.8);
+        }
 
         .time-stamp {
             font-size: 0.75rem;
-            color: #94a3b8;
-            background: rgba(15,23,42,0.6);
-            padding: 1px 5px;
-            border-radius: 4px;
+            color: var(--text-muted);
+            background: var(--timestamp-bg);
+            padding: 2px 8px;
+            border-radius: 6px;
         }
 
+        [data-theme="cyberpunk"] .time-stamp {
+            color: #00f0ff;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+            text-shadow: 0 0 5px rgba(0, 240, 255, 0.6);
+        }
+
+        /* VIEW HEADER */
         .view-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 10px;
+            margin-bottom: 16px;
             background: var(--card-bg);
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: var(--card-border);
         }
 
+        .view-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        [data-theme="cyberpunk"] .view-header h2 {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            letter-spacing: 0.04em;
+        }
+
+        /* FORM */
         .form-card {
             background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            padding: 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: var(--card-border);
         }
 
-        .form-group {
-            margin-bottom: 12px;
+        [data-theme="cyberpunk"] .form-card {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
         }
+
+        .form-group { margin-bottom: 14px; }
 
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 0.85rem;
-            color: #e2e8f0;
+            margin-bottom: 5px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        [data-theme="cyberpunk"] label {
+            letter-spacing: 0.03em;
         }
 
         input, select {
             width: 100%;
-            padding: 8px;
-            background-color: #0f172a;
-            border: 1px solid #475569;
-            color: #f8fafc;
-            border-radius: 6px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
             font-size: 0.95rem;
-            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-main);
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        [data-theme="cyberpunk"] input:focus,
+        [data-theme="cyberpunk"] select:focus {
+            box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.35), 0 0 14px rgba(0, 240, 255, 0.25);
+            border-color: #00f0ff;
         }
 
         input:disabled, select:disabled {
-            background-color: #1e293b;
-            color: #94a3b8;
-            border-color: #334155;
+            opacity: 0.55;
+            cursor: not-allowed;
         }
 
         .row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
+        /* RESULTS */
         .results-box {
-            background: #0f172a;
-            border: 1px solid #3b82f6;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 15px 0;
+            background: var(--results-bg);
+            border: 1px solid var(--results-border);
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin: 18px 0;
             font-size: 0.9rem;
         }
 
+        [data-theme="cyberpunk"] .results-box {
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.15);
+            border-radius: 4px;
+        }
+
         .results-box h3 {
-            margin: 0 0 8px 0;
-            color: #60a5fa;
-            font-size: 1rem;
+            margin: 0 0 10px 0;
+            color: var(--results-title);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        [data-theme="cyberpunk"] .results-box h3 {
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+            letter-spacing: 0.05em;
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            color: #e2e8f0;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
         }
 
+        /* BUTTONS */
         .btn {
             background-color: var(--primary);
-            color: white;
+            color: var(--btn-text);
             border: none;
-            padding: 10px;
+            padding: 12px 16px;
             font-size: 0.95rem;
-            font-weight: bold;
-            border-radius: 6px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
             width: 100%;
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            transition: all 0.15s;
         }
 
-        .btn:hover { background-color: #2563eb; }
-        .btn-secondary { background-color: #475569; width: auto; padding: 6px 12px; font-size: 0.8rem; color: #f8fafc; }
-        .btn-danger { background-color: #dc2626; }
-        .btn-danger:hover { background-color: #b91c1c; }
-        
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn:active { transform: scale(0.98); }
+
+        [data-theme="cyberpunk"] .btn {
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            border-radius: 3px;
+            background: linear-gradient(135deg, #00f0ff, #00c4d4);
+        }
+
+        [data-theme="cyberpunk"] .btn:hover {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+            filter: brightness(1.15);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: #ffffff;
+            width: auto;
+            padding: 7px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 0;
+        }
+        .btn-secondary:hover { background-color: #475569; }
+
+        [data-theme="cyberpunk"] .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(0, 240, 255, 0.55);
+            color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+        }
+        [data-theme="cyberpunk"] .btn-secondary:hover {
+            background: rgba(0, 240, 255, 0.12);
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: #ffffff;
+        }
+        .btn-danger:hover { filter: brightness(1.1); }
+
+        [data-theme="cyberpunk"] .btn-danger {
+            background: linear-gradient(135deg, #ff2a6d, #c41e5a);
+            box-shadow: 0 0 20px rgba(255, 42, 109, 0.5);
+        }
+        [data-theme="cyberpunk"] .btn-danger:hover {
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.7);
+        }
+
         .btn-danger.armed {
-            background-color: #c2410c;
             animation: pulse 0.5s 2;
         }
+
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.55; }
         }
 
+        /* MISC */
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 5px;
+            margin-top: 4px;
         }
         .checkbox-group input {
             width: auto;
+            accent-color: var(--primary);
         }
 
         .readonly-banner {
-            background-color: #451a03;
-            border: 1px solid #78350f;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-text);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
             font-size: 0.85rem;
-            color: #fde68a;
+            color: var(--warning-text);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
         .codes-preview-box {
-            background: #0f172a;
-            border: 1px dashed #475569;
-            padding: 8px 10px;
-            border-radius: 6px;
-            margin: 15px 0;
-            font-size: 0.80rem;
-            color: #94a3b8;
+            background: var(--codes-bg);
+            border: 1px dashed var(--border);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        [data-theme="cyberpunk"] .codes-preview-box {
+            border-style: solid;
+            border-color: rgba(0, 240, 255, 0.25);
+        }
+
+        .section-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--results-title);
+            margin: 4px 0 12px;
+        }
+
+        [data-theme="cyberpunk"] .section-label {
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            text-shadow: 0 0 6px rgba(0, 240, 255, 0.4);
+        }
+
+        hr.divider {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        .sheet-box {
+            background: var(--sheet-bg);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
     </style>
 </head>
 <body>
-
 <div class="container">
-
-    <!-- 1. FŐOLDAL -->
+    <!-- FŐOLDAL -->
     <div id="pageMain" class="page active">
-        <div style="font-weight: bold; font-size: 1.2rem; color: #60a5fa; margin-bottom: 12px; text-align: center;">BATpack-R</div>
-        <div class="machines-list" id="machinesGrid">
-            <!-- JS tölti fel -->
+        <div class="app-header">
+            <h1 class="app-title">BATpack-R</h1>
+            <div class="app-subtitle">Gépállapot & alapanyag kezelés</div>
+            <button class="theme-toggle" id="themeToggle" onclick="cycleTheme()" title="Téma váltása">☀️</button>
         </div>
+        <div class="machines-list" id="machinesGrid"></div>
     </div>
 
-    <!-- 2. SZERKESZTŐ / KALKULÁTOR OLDAL -->
+    <!-- SZERKESZTŐ -->
     <div id="pageEditor" class="page">
         <div class="view-header">
-            <h2 id="editorTitle" style="margin:0; font-size:1.1rem; color:#f8fafc;">Gép szerkesztése</h2>
-            <button class="btn btn-secondary" onclick="goHome()">Vissza</button>
+            <h2 id="editorTitle">Gép szerkesztése</h2>
+            <button class="btn btn-secondary" onclick="goHome()">← Vissza</button>
         </div>
-
         <div class="form-card">
             <div id="readonlyBanner" class="readonly-banner" style="display: none;">
                 <span>Csak olvasható mód.</span>
-                <button class="btn btn-secondary" onclick="enableEditing()" style="padding: 4px 8px;">Szerkesztés</button>
+                <button class="btn btn-secondary" onclick="enableEditing()" style="padding: 5px 12px;">Szerkesztés</button>
             </div>
-
             <form id="calcForm" onsubmit="saveMachineData(event)">
                 <div class="row-2">
                     <div class="form-group">
-                        <label for="poNumber">PO Szám:</label>
+                        <label for="poNumber">PO Szám</label>
                         <input type="text" id="poNumber" placeholder="pl. PO1234">
                     </div>
                     <div class="form-group">
-                        <label for="foilType">Gyűjtő fólia:</label>
+                        <label for="foilType">Gyűjtő fólia</label>
                         <select id="foilType" onchange="calculate()">
                             <option value="5">5-ös (120 can)</option>
                             <option value="10">10-es (240 can)</option>
                         </select>
                     </div>
                 </div>
-
                 <div class="row-2">
                     <div class="form-group">
-                        <label for="palletType">Raklap típusa:</label>
+                        <label for="palletType">Raklap típusa</label>
                         <select id="palletType">
                             <option value="EU">EU</option>
                             <option value="IP">IP</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="palletHeight">Raklap magasság:</label>
+                        <label for="palletHeight">Raklap magasság</label>
                         <input type="number" id="palletHeight" min="1" max="15" value="4">
                     </div>
                 </div>
-
                 <div class="row-2">
                     <div class="form-group">
-                        <label for="targetCartons">Terv (Karton):</label>
+                        <label for="targetCartons">Terv (Karton)</label>
                         <input type="number" id="targetCartons" min="0" value="0" oninput="calculate()">
                     </div>
                     <div class="form-group">
-                        <label for="producedCartons">Termelt (Karton):</label>
+                        <label for="producedCartons">Termelt (Karton)</label>
                         <input type="number" id="producedCartons" min="0" value="0" oninput="calculate()">
                     </div>
                 </div>
 
-                <hr style="border: 0; border-top: 1px solid #334155; margin: 12px 0;">
-
-                <label style="font-size:0.95rem; color:#60a5fa; margin-bottom:8px;">Komissziós kocsi készlet:</label>
+                <hr class="divider">
+                <div class="section-label">Komissziós kocsi készlet</div>
                 
                 <div class="row-2">
                     <div class="form-group">
-                        <label for="stockRoof">Tető címke (db):</label>
+                        <label for="stockRoof">Tető címke (db)</label>
                         <input type="number" id="stockRoof" min="0" value="0" oninput="calculate()">
                     </div>
                     <div class="form-group">
-                        <label for="stockSide">Oldal címke (db):</label>
+                        <label for="stockSide">Oldal címke (db)</label>
                         <input type="number" id="stockSide" min="0" value="0" oninput="calculate()">
                     </div>
                 </div>
-
                 <div class="row-2">
                     <div class="form-group">
-                        <label for="stockBottom">Alj címke (db):</label>
+                        <label for="stockBottom">Alj címke (db)</label>
                         <input type="number" id="stockBottom" min="0" value="0" oninput="calculate()">
                     </div>
-                    <div class="form-group" style="background: #0f172a; padding: 6px; border-radius: 6px; border: 1px solid #334155;">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="hasSheet" onchange="toggleSheetInput(); calculate();">
-                            <label for="hasSheet" style="margin:0; cursor:pointer; font-size:0.8rem;">Lepedő szükséges</label>
-                        </div>
-                        <div id="sheetContainer" style="display: none; margin-top: 4px;">
-                            <label for="sheetRolls" style="font-size:0.75rem;">Lepedő készlet (db):</label>
-                            <input type="number" id="sheetRolls" min="0" step="1" value="0" oninput="calculate()" style="padding: 4px; font-size:0.85rem;" placeholder="pl. 7000">
+                    <div class="form-group">
+                        <div class="sheet-box">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="hasSheet" onchange="toggleSheetInput(); calculate();">
+                                <label for="hasSheet" style="margin:0; cursor:pointer; font-size:0.82rem;">Lepedő szükséges</label>
+                            </div>
+                            <div id="sheetContainer" style="display: none; margin-top: 8px;">
+                                <label for="sheetRolls" style="font-size:0.75rem;">Lepedő készlet (db)</label>
+                                <input type="number" id="sheetRolls" min="0" step="1" value="0" oninput="calculate()" style="padding: 7px 10px; font-size:0.88rem;" placeholder="pl. 7000">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="results-box">
                     <h3>Számítások</h3>
-                    <div class="result-item"><span>Hátralévő karton:</span><strong id="resRemainingCartons">0 ktn</strong></div>
-                    <div class="result-item"><span>Hátralévő termék:</span><strong id="resRemainingCan">0 can</strong></div>
-                    <hr style="border:0; border-top:1px solid #334155; margin: 6px 0;">
-                    <div class="result-item"><span>Tető státusz:</span><span id="resRoofStatus">-</span></div>
-                    <div class="result-item"><span>Oldal státusz:</span><span id="resSideStatus">-</span></div>
-                    <div class="result-item"><span>Alj státusz:</span><span id="resBottomStatus">-</span></div>
-                    <div id="sheetResultRow" class="result-item" style="display:none;"><span>Lepedő státusz:</span><span id="resSheetStatus">-</span></div>
+                    <div class="result-item"><span>Hátralévő karton</span><strong id="resRemainingCartons">0 ktn</strong></div>
+                    <div class="result-item"><span>Hátralévő termék</span><strong id="resRemainingCan">0 can</strong></div>
+                    <hr style="border:0; border-top:1px solid var(--results-border); margin: 8px 0;">
+                    <div class="result-item"><span>Tető státusz</span><span id="resRoofStatus">-</span></div>
+                    <div class="result-item"><span>Oldal státusz</span><span id="resSideStatus">-</span></div>
+                    <div class="result-item"><span>Alj státusz</span><span id="resBottomStatus">-</span></div>
+                    <div id="sheetResultRow" class="result-item" style="display:none;"><span>Lepedő státusz</span><span id="resSheetStatus">-</span></div>
                 </div>
 
-                <div class="codes-preview-box" id="codesPreviewBox">
-                    <strong>Rögzített cikkszámok:</strong> <span id="codesPreviewText">Még nincsenek megadva</span>
+                <div class="codes-preview-box">
+                    <strong>Rögzített cikkszámok:</strong><br>
+                    <span id="codesPreviewText">Még nincsenek megadva</span>
                 </div>
 
-                <button type="button" class="btn btn-secondary" onclick="openCodesView()" style="background-color: #334155; width: 100%; margin-bottom: 8px;">Cikkszámok megadása</button>
-
+                <button type="button" class="btn btn-secondary" onclick="openCodesView()" style="width: 100%; margin-bottom: 10px;">
+                    Cikkszámok megadása
+                </button>
                 <button type="submit" class="btn" id="saveBtn">Mentés és Vissza</button>
                 <button type="button" class="btn btn-danger" id="clearBtn" onclick="clearMachineData()">Minden törlése / Alaphelyzet</button>
             </form>
         </div>
     </div>
 
-    <!-- 3. CIKKSZÁMOK OLDAL -->
+    <!-- CIKKSZÁMOK -->
     <div id="pageCodes" class="page">
         <div class="view-header">
-            <h2 style="margin:0; font-size:1.1rem; color:#f8fafc;">Cikkszámok beállítása</h2>
-            <button class="btn btn-secondary" onclick="closeCodesView()">Vissza</button>
+            <h2>Cikkszámok beállítása</h2>
+            <button class="btn btn-secondary" onclick="closeCodesView()">← Vissza</button>
         </div>
         <div class="form-card">
             <div class="form-group">
-                <label>Tető címke cikkszám:</label>
+                <label>Tető címke cikkszám</label>
                 <input type="text" id="codeRoof" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
-                <label>Oldal címke cikkszám:</label>
+                <label>Oldal címke cikkszám</label>
                 <input type="text" id="codeSide" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
-                <label>Alj címke cikkszám:</label>
+                <label>Alj címke cikkszám</label>
                 <input type="text" id="codeBottom" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
-                <label>Karton cikkszám:</label>
+                <label>Karton cikkszám</label>
                 <input type="text" id="codeCarton" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
-                <label>Gyűjtőfólia cikkszám:</label>
+                <label>Gyűjtőfólia cikkszám</label>
                 <input type="text" id="codeFoil" placeholder="Cikkszám...">
             </div>
             <button type="button" class="btn" onclick="saveCodesAndReturn()">Cikkszámok mentése</button>
         </div>
     </div>
-
 </div>
 
 <script>
+    // ===== TÉMA RENDSZER =====
+    const themes = ['light', 'dark', 'cyberpunk'];
+    const themeIcons = { light: '☀️', dark: '🌙', cyberpunk: '⚡' };
+    const themeTitles = { light: 'Világos mód', dark: 'Sötét mód', cyberpunk: 'Cyberpunk mód' };
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const btn = document.getElementById('themeToggle');
+        if (btn) {
+            btn.textContent = themeIcons[theme];
+            btn.title = themeTitles[theme];
+        }
+        localStorage.setItem('bat_theme', theme);
+    }
+
+    function cycleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const idx = themes.indexOf(current);
+        const next = themes[(idx + 1) % themes.length];
+        setTheme(next);
+    }
+
+    function initTheme() {
+        const saved = localStorage.getItem('bat_theme');
+        const theme = themes.includes(saved) ? saved : 'light';
+        setTheme(theme);
+    }
+
+    // ===== ALKALMAZÁS =====
     const machineIds = ["4810", "4820", "4830", "4840", "4850", "4860", "4870", "4880", "4950", "4960"];
     let currentMachine = null;
     let db = {};
@@ -416,9 +818,7 @@
 
     try {
         db = JSON.parse(localStorage.getItem('bat_logistics_data')) || {};
-    } catch (e) {
-        db = {};
-    }
+    } catch (e) { db = {}; }
 
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -430,7 +830,6 @@
         const grid = document.getElementById('machinesGrid');
         if (!grid) return;
         grid.innerHTML = '';
-
         machineIds.forEach(id => {
             const data = db[id];
             const card = document.createElement('div');
@@ -445,14 +844,12 @@
                 const statusClass = data.isComplete ? 'status-teljes' : 'status-hianyos';
                 const badgeText = data.isComplete ? 'Teljes' : 'Hiányos alapanyag!';
                 const badgeClass = data.isComplete ? 'badge-teljes' : 'badge-hianyos';
-
                 let codesText = '';
                 if (data.codes && (data.codes.roof || data.codes.side || data.codes.bottom || data.codes.carton || data.codes.foil)) {
-                    codesText = `<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px; border-top:1px dashed #334155; padding-top:2px;">
+                    codesText = `<div style="font-size:0.75rem; color:var(--text-secondary); margin-top:6px; border-top:1px dashed var(--border); padding-top:5px;">
                         <strong>Cikkszámok:</strong> T:${data.codes.roof||'-'} | O:${data.codes.side||'-'} | A:${data.codes.bottom||'-'} | K:${data.codes.carton||'-'} | F:${data.codes.foil||'-'}
                     </div>`;
                 }
-
                 card.className = `machine-card ${statusClass}`;
                 card.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -467,7 +864,6 @@
                     </div>
                 `;
             }
-
             card.onclick = () => openEditor(id);
             grid.appendChild(card);
         });
@@ -478,7 +874,6 @@
         document.getElementById('editorTitle').innerText = `Gép szerkesztése: ${id}`;
         resetDeleteButton();
         showPage('pageEditor');
-
         const data = db[id];
         if (data && !data.isCleared) {
             document.getElementById('poNumber').value = data.poNumber || '';
@@ -490,11 +885,9 @@
             document.getElementById('stockRoof').value = data.stockRoof || 0;
             document.getElementById('stockSide').value = data.stockSide || 0;
             document.getElementById('stockBottom').value = data.stockBottom || 0;
-
             document.getElementById('hasSheet').checked = data.hasSheet || false;
             document.getElementById('sheetRolls').value = data.sheetRolls || 0;
             toggleSheetInput();
-
             if (data.codes) {
                 document.getElementById('codeRoof').value = data.codes.roof || '';
                 document.getElementById('codeSide').value = data.codes.side || '';
@@ -504,7 +897,6 @@
             } else {
                 clearCodesInputs();
             }
-
             setFormReadonly(true);
             document.getElementById('readonlyBanner').style.display = 'flex';
         } else {
@@ -519,11 +911,9 @@
     }
 
     function clearCodesInputs() {
-        document.getElementById('codeRoof').value = '';
-        document.getElementById('codeSide').value = '';
-        document.getElementById('codeBottom').value = '';
-        document.getElementById('codeCarton').value = '';
-        document.getElementById('codeFoil').value = '';
+        ['codeRoof','codeSide','codeBottom','codeCarton','codeFoil'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
     }
 
     function updateCodesPreview() {
@@ -532,7 +922,6 @@
         const b = document.getElementById('codeBottom').value;
         const c = document.getElementById('codeCarton').value;
         const f = document.getElementById('codeFoil').value;
-
         if (r || s || b || c || f) {
             document.getElementById('codesPreviewText').innerHTML = `Tető: ${r||'-'} | Oldal: ${s||'-'} | Alj: ${b||'-'} | Karton: ${c||'-'} | Fólia: ${f||'-'}`;
         } else {
@@ -561,15 +950,13 @@
         document.getElementById('readonlyBanner').style.display = 'none';
     }
 
-    function openCodesView() {
-        showPage('pageCodes');
-    }
+    function openCodesView() { showPage('pageCodes'); }
+    function closeCodesView() { showPage('pageEditor'); }
 
     function saveCodesAndReturn() {
         if (!db[currentMachine] || db[currentMachine].isCleared) {
             db[currentMachine] = { isCleared: false, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isComplete: false };
         }
-        
         db[currentMachine].codes = {
             roof: document.getElementById('codeRoof').value,
             side: document.getElementById('codeSide').value,
@@ -577,16 +964,8 @@
             carton: document.getElementById('codeCarton').value,
             foil: document.getElementById('codeFoil').value
         };
-
-        try {
-            localStorage.setItem('bat_logistics_data', JSON.stringify(db));
-        } catch(e) {}
-
+        try { localStorage.setItem('bat_logistics_data', JSON.stringify(db)); } catch(e) {}
         updateCodesPreview();
-        showPage('pageEditor');
-    }
-
-    function closeCodesView() {
         showPage('pageEditor');
     }
 
@@ -600,14 +979,10 @@
         const target = parseFloat(document.getElementById('targetCartons').value) || 0;
         const produced = parseFloat(document.getElementById('producedCartons').value) || 0;
         const foil = parseInt(document.getElementById('foilType').value) || 5;
-
         const remainingCartons = Math.max(0, target - produced);
-        const cansPerCarton = 240; 
-        const remainingCans = remainingCartons * cansPerCarton;
-
+        const remainingCans = remainingCartons * 240;
         document.getElementById('resRemainingCartons').innerText = `${remainingCartons} ktn`;
         document.getElementById('resRemainingCan').innerText = `${remainingCans} can`;
-
         const requiredLabels = remainingCans;
         
         const stockRoof = parseFloat(document.getElementById('stockRoof').value) || 0;
@@ -617,12 +992,11 @@
         const checkStatus = (stock, required) => {
             const diff = stock - required;
             if (diff >= 0) {
-                return `<span style="color: #34d399; font-weight: bold;">Elég (+${diff} db)</span>`;
+                return `<span style="color: var(--success); font-weight: bold;">Elég (+${diff} db)</span>`;
             } else {
-                return `<span style="color: #fca5a5; font-weight: bold;">Hiányzik ${Math.abs(diff)} db</span>`;
+                return `<span style="color: var(--danger); font-weight: bold;">Hiányzik ${Math.abs(diff)} db</span>`;
             }
         };
-
         document.getElementById('resRoofStatus').innerHTML = checkStatus(stockRoof, requiredLabels);
         document.getElementById('resSideStatus').innerHTML = checkStatus(stockSide, requiredLabels);
         document.getElementById('resBottomStatus').innerHTML = checkStatus(stockBottom, requiredLabels);
@@ -630,14 +1004,12 @@
         const hasSheet = document.getElementById('hasSheet').checked;
         if (hasSheet) {
             const stockSheets = parseFloat(document.getElementById('sheetRolls').value) || 0;
-            const requiredSheets = remainingCans / foil; 
-            
+            const requiredSheets = remainingCans / foil;
             const diffSheets = stockSheets - requiredSheets;
-
             if (diffSheets >= 0) {
-                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #34d399; font-weight: bold;">Elég (+${Math.round(diffSheets)} db)</span>`;
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: var(--success); font-weight: bold;">Elég (+${Math.round(diffSheets)} db)</span>`;
             } else {
-                document.getElementById('resSheetStatus').innerHTML = `<span style="color: #fca5a5; font-weight: bold;">Hiányzik ${Math.abs(Math.round(diffSheets))} db</span>`;
+                document.getElementById('resSheetStatus').innerHTML = `<span style="color: var(--danger); font-weight: bold;">Hiányzik ${Math.abs(Math.round(diffSheets))} db</span>`;
             }
         }
     }
@@ -654,23 +1026,17 @@
 
     function clearMachineData() {
         const btn = document.getElementById('clearBtn');
-        
         if (!deleteState) {
             deleteState = true;
             if (btn) {
                 btn.innerText = "⚠️ Biztos törlöd? Kattints újra!";
                 btn.classList.add('armed');
             }
-            
-            deleteTimer = setTimeout(() => {
-                resetDeleteButton();
-            }, 2000);
+            deleteTimer = setTimeout(resetDeleteButton, 1000);
         } else {
             clearTimeout(deleteTimer);
             db[currentMachine] = { isCleared: true };
-            try {
-                localStorage.setItem('bat_logistics_data', JSON.stringify(db));
-            } catch(e) {}
+            try { localStorage.setItem('bat_logistics_data', JSON.stringify(db)); } catch(e) {}
             resetDeleteButton();
             goHome();
         }
@@ -678,30 +1044,22 @@
 
     function saveMachineData(e) {
         e.preventDefault();
-
-        const now = new Date();
-        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+        const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const target = parseFloat(document.getElementById('targetCartons').value) || 0;
         const produced = parseFloat(document.getElementById('producedCartons').value) || 0;
         const foil = parseInt(document.getElementById('foilType').value) || 5;
         const remainingCartons = Math.max(0, target - produced);
         const remainingCans = remainingCartons * 240;
         const requiredLabels = remainingCans;
-
         const stockRoof = parseFloat(document.getElementById('stockRoof').value) || 0;
         const stockSide = parseFloat(document.getElementById('stockSide').value) || 0;
         const stockBottom = parseFloat(document.getElementById('stockBottom').value) || 0;
 
         let isComplete = (stockRoof >= requiredLabels) && (stockSide >= requiredLabels) && (stockBottom >= requiredLabels);
-
         const hasSheet = document.getElementById('hasSheet').checked;
         if (hasSheet) {
             const stockSheets = parseFloat(document.getElementById('sheetRolls').value) || 0;
-            const requiredSheets = remainingCans / foil;
-            if (stockSheets < requiredSheets) {
-                isComplete = false;
-            }
+            if (stockSheets < (remainingCans / foil)) isComplete = false;
         }
 
         db[currentMachine] = {
@@ -712,10 +1070,8 @@
             foilType: foil,
             targetCartons: target,
             producedCartons: produced,
-            stockRoof: stockRoof,
-            stockSide: stockSide,
-            stockBottom: stockBottom,
-            hasSheet: hasSheet,
+            stockRoof, stockSide, stockBottom,
+            hasSheet,
             sheetRolls: document.getElementById('sheetRolls').value,
             codes: {
                 roof: document.getElementById('codeRoof').value,
@@ -725,18 +1081,15 @@
                 foil: document.getElementById('codeFoil').value
             },
             timestamp: timeString,
-            isComplete: isComplete
+            isComplete
         };
-
-        try {
-            localStorage.setItem('bat_logistics_data', JSON.stringify(db));
-        } catch(e) {}
-        
+        try { localStorage.setItem('bat_logistics_data', JSON.stringify(db)); } catch(e) {}
         goHome();
     }
 
+    // Indítás
+    initTheme();
     renderMainGrid();
 </script>
-
 </body>
 </html>
