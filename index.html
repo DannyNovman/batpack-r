@@ -1153,8 +1153,10 @@
         const target = parseThousands(document.getElementById('targetCartons').value);
         const produced = parseThousands(document.getElementById('producedCartons').value);
         const foil = parseInt(document.getElementById('foilType').value) || 5;
+        // 5-ös gyűjtő = 120 can/karton, 10-es = 240 can/karton
+        const cansPerCarton = foil * 24;
         const remainingCartons = Math.max(0, target - produced);
-        const remainingCans = remainingCartons * 240;
+        const remainingCans = remainingCartons * cansPerCarton;
         document.getElementById('resRemainingCartons').innerText = `${formatThousands(remainingCartons) || 0} ktn`;
         document.getElementById('resRemainingCan').innerText = `${formatThousands(remainingCans) || 0} can`;
         const requiredLabels = remainingCans;
@@ -1250,8 +1252,9 @@
         const target = parseThousands(document.getElementById('targetCartons').value);
         const produced = parseThousands(document.getElementById('producedCartons').value);
         const foil = parseInt(document.getElementById('foilType').value) || 5;
+        const cansPerCarton = foil * 24; // 5→120, 10→240
         const remainingCartons = Math.max(0, target - produced);
-        const remainingCans = remainingCartons * 240;
+        const remainingCans = remainingCartons * cansPerCarton;
         const requiredLabels = remainingCans;
         const stockRoof = parseThousands(document.getElementById('stockRoof').value);
         const stockSide = parseThousands(document.getElementById('stockSide').value);
