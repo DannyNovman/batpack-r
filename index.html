@@ -722,6 +722,53 @@
         .input-action-wrap input {
             padding-right: 40px;
         }
+
+        /* Custom numeric modal */
+        .num-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .num-modal-overlay.active {
+            display: flex;
+        }
+        .num-modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: var(--shadow-hover);
+            border: var(--card-border);
+        }
+        [data-theme="cyberpunk"] .num-modal {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+        }
+        .num-modal h3 {
+            margin: 0 0 14px 0;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+        .num-modal input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .num-modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .num-modal-actions .btn {
+            margin: 0;
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -923,6 +970,18 @@
                 <input type="text" id="codeCollectLabel" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
             </div>
             <button type="button" class="btn" onclick="saveCodesAndReturn()">Cikkszámok mentése</button>
+        </div>
+    </div>
+</div>
+
+<!-- Numerikus felugró ablak -->
+<div id="numModalOverlay" class="num-modal-overlay" onclick="if(event.target===this) closeNumModal()">
+    <div class="num-modal">
+        <h3 id="numModalTitle">Érték</h3>
+        <input type="text" id="numModalInput" inputmode="decimal" placeholder="Szám..." autocomplete="off">
+        <div class="num-modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeNumModal()">Mégse</button>
+            <button type="button" class="btn" id="numModalOk">OK</button>
         </div>
     </div>
 </div>
@@ -1256,28 +1315,59 @@
         calculate();
     }
 
+    let numModalCallback = null;
+
+    function openNumModal(title, callback) {
+        document.getElementById('numModalTitle').textContent = title;
+        const input = document.getElementById('numModalInput');
+        input.value = '';
+        numModalCallback = callback;
+        document.getElementById('numModalOverlay').classList.add('active');
+        setTimeout(() => input.focus(), 50);
+    }
+
+    function closeNumModal() {
+        document.getElementById('numModalOverlay').classList.remove('active');
+        numModalCallback = null;
+        document.getElementById('numModalInput').value = '';
+    }
+
+    function confirmNumModal() {
+        const raw = document.getElementById('numModalInput').value.trim();
+        if (numModalCallback) numModalCallback(raw);
+        closeNumModal();
+    }
+
+    document.getElementById('numModalOk').onclick = confirmNumModal;
+    document.getElementById('numModalInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmNumModal();
+        if (e.key === 'Escape') closeNumModal();
+    });
+
     function addToTarget() {
-        const el = document.getElementById('targetCartons');
-        const current = parseThousands(el.value);
-        const addStr = prompt('Mennyit adjon hozzá a tervhez?', '0');
-        if (addStr === null) return;
-        const add = parseThousands(addStr);
-        if (add < 0) return;
-        el.value = formatThousands(current + add);
-        calculate();
+        openNumModal('Mennyit adjon hozzá a tervhez?', (raw) => {
+            if (!raw) return;
+            const add = parseThousands(raw);
+            if (add < 0) return;
+            const el = document.getElementById('targetCartons');
+            const current = parseThousands(el.value);
+            el.value = formatThousands(current + add);
+            calculate();
+        });
     }
 
     function multiplyStock(inputId) {
-        const el = document.getElementById(inputId);
-        if (!el) return;
-        const current = parseThousands(el.value);
-        const multStr = prompt('Szorzó (pl. 2, 4, 1.5):', '1');
-        if (multStr === null) return;
-        const mult = parseFloat(String(multStr).replace(',', '.'));
-        if (isNaN(mult) || mult <= 0) return;
-        const newVal = Math.round(current * mult);
-        el.value = formatThousands(newVal);
-        calculate();
+        openNumModal('Szorzó (pl. 2, 4, 1.5)', (raw) => {
+            if (!raw) return;
+            const mult = parseFloat(String(raw).replace(',', '.'));
+            if (isNaN(mult) || mult <= 0) return;
+            const el = document.getElementById(inputId);
+            if (!el) return;
+            const current = parseThousands(el.value);
+            const newVal = Math.round(current * mult);
+            el.value = formatThousands(newVal);
+            calculate();
+        });
     }
 
     function calculate() {
