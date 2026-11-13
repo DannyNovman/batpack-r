@@ -296,6 +296,10 @@
             border-left: 7px solid #ef4444;
             background: linear-gradient(to right, #fef2f2 0%, #ffffff 48%);
         }
+        [data-theme="light"] .machine-card.status-adatok {
+            border-left: 7px solid #f59e0b;
+            background: linear-gradient(to right, #fffbeb 0%, #ffffff 48%);
+        }
 
         /* ===== SÖTÉT ===== */
         [data-theme="dark"] .machine-card.status-teljes {
@@ -305,6 +309,10 @@
         [data-theme="dark"] .machine-card.status-hianyos {
             border-left: 7px solid #ef4444;
             background: linear-gradient(to right, #7f1d1d 0%, #1e293b 55%);
+        }
+        [data-theme="dark"] .machine-card.status-adatok {
+            border-left: 7px solid #f59e0b;
+            background: linear-gradient(to right, #78350f 0%, #1e293b 55%);
         }
 
         /* ===== CYBERPUNK ===== */
@@ -324,6 +332,12 @@
             box-shadow: 
                 0 0 18px rgba(255, 42, 109, 0.3),
                 inset 0 0 20px rgba(255, 42, 109, 0.06);
+        }
+        [data-theme="cyberpunk"] .machine-card.status-adatok {
+            border-left: 7px solid #ff9f1c;
+            box-shadow: 
+                0 0 18px rgba(255, 159, 28, 0.35),
+                inset 0 0 20px rgba(255, 159, 28, 0.06);
         }
 
         [data-theme="cyberpunk"] .machine-card:hover {
@@ -369,6 +383,10 @@
             background-color: var(--danger-bg);
             color: var(--danger-text);
         }
+        .badge-adatok {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+        }
 
         [data-theme="cyberpunk"] .badge-teljes {
             box-shadow: 0 0 12px rgba(57, 255, 20, 0.55);
@@ -379,6 +397,11 @@
             box-shadow: 0 0 12px rgba(255, 42, 109, 0.55);
             border: 1px solid rgba(255, 42, 109, 0.5);
             text-shadow: 0 0 6px rgba(255, 42, 109, 0.8);
+        }
+        [data-theme="cyberpunk"] .badge-adatok {
+            box-shadow: 0 0 12px rgba(255, 159, 28, 0.55);
+            border: 1px solid rgba(255, 159, 28, 0.5);
+            text-shadow: 0 0 6px rgba(255, 159, 28, 0.8);
         }
 
         .time-stamp {
@@ -1067,9 +1090,37 @@
             if (!data) return;
 
             const card = document.createElement('div');
-            const statusClass = data.isComplete ? 'status-teljes' : 'status-hianyos';
-            const badgeText = data.isComplete ? 'Teljes' : 'Hiányos alapanyag!';
-            const badgeClass = data.isComplete ? 'badge-teljes' : 'badge-hianyos';
+
+            // Kötelező mezők ellenőrzése (üres = hiányos adatok)
+            const isEmpty = (v) => v == null || v === '' || (typeof v === 'number' && isNaN(v));
+            const missingData = isEmpty(data.targetCartons) ||
+                                isEmpty(data.producedCartons) ||
+                                isEmpty(data.stockRoof) ||
+                                isEmpty(data.stockSide) ||
+                                isEmpty(data.stockBottom) ||
+                                (data.hasSheet && isEmpty(data.sheetRolls));
+
+            let statusClass, badgeText, badgeClass;
+            if (missingData) {
+                statusClass = 'status-adatok';
+                badgeText = 'Hiányos adatok!';
+                badgeClass = 'badge-adatok';
+            } else if (data.isComplete) {
+                statusClass = 'status-teljes';
+                badgeText = 'Teljes';
+                badgeClass = 'badge-teljes';
+            } else {
+                statusClass = 'status-hianyos';
+                badgeText = 'Hiányos alapanyag!';
+                badgeClass = 'badge-hianyos';
+            }
+
+            // Raklap megjelenítés: csak ha van magasság
+            let palletText = '';
+            if (data.palletHeight != null && data.palletHeight !== '' && data.palletHeight !== 0) {
+                const pType = data.palletType || 'EU';
+                palletText = `<strong>Raklap:</strong> ${pType}-${data.palletHeight}<br>`;
+            }
 
             let codesText = '';
             if (data.codes) {
@@ -1099,7 +1150,7 @@
                 </div>
                 <div class="machine-info">
                     <strong>PO:</strong> ${data.poNumber || '-'}&nbsp;&nbsp;|&nbsp;&nbsp;
-                    <strong>Raklap:</strong> ${data.palletType || 'EU'}-${data.palletHeight || 4}<br>
+                    ${palletText}
                     <span class="badge ${badgeClass}">${badgeText}</span>
                     ${codesText}
                 </div>
@@ -1470,22 +1521,38 @@
         renameError.style.display = 'none';
 
         const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const target = parseThousands(document.getElementById('targetCartons').value);
-        const produced = parseThousands(document.getElementById('producedCartons').value);
+        // Üres mező → null, különben szám (a 0 érvényes marad)
+        function parseOrNull(val) {
+            const digits = String(val == null ? '' : val).replace(/\D/g, '');
+            if (!digits) return null;
+            return parseInt(digits, 10);
+        }
+
+        const target = parseOrNull(document.getElementById('targetCartons').value);
+        const produced = parseOrNull(document.getElementById('producedCartons').value);
         const foil = parseInt(document.getElementById('foilType').value) || 5;
-        const cansPerCarton = foil * 24; // 5→120, 10→240
-        const remainingCartons = Math.max(0, target - produced);
+        const cansPerCarton = foil * 24;
+        const remainingCartons = Math.max(0, (target || 0) - (produced || 0));
         const remainingCans = remainingCartons * cansPerCarton;
         const requiredLabels = remainingCans;
-        const stockRoof = parseThousands(document.getElementById('stockRoof').value);
-        const stockSide = parseThousands(document.getElementById('stockSide').value);
-        const stockBottom = parseThousands(document.getElementById('stockBottom').value);
 
-        let isComplete = (stockRoof >= requiredLabels) && (stockSide >= requiredLabels) && (stockBottom >= requiredLabels);
+        const stockRoof = parseOrNull(document.getElementById('stockRoof').value);
+        const stockSide = parseOrNull(document.getElementById('stockSide').value);
+        const stockBottom = parseOrNull(document.getElementById('stockBottom').value);
         const hasSheet = document.getElementById('hasSheet').checked;
-        if (hasSheet) {
-            const stockSheets = parseThousands(document.getElementById('sheetRolls').value);
-            if (stockSheets < (remainingCans / foil)) isComplete = false;
+        const sheetRolls = hasSheet ? parseOrNull(document.getElementById('sheetRolls').value) : null;
+
+        // Hiányos adatok ellenőrzés
+        const missingData = target == null || produced == null ||
+                            stockRoof == null || stockSide == null || stockBottom == null ||
+                            (hasSheet && sheetRolls == null);
+
+        let isComplete = false;
+        if (!missingData) {
+            isComplete = (stockRoof >= requiredLabels) &&
+                         (stockSide >= requiredLabels) &&
+                         (stockBottom >= requiredLabels);
+            if (hasSheet && sheetRolls < (remainingCans / foil)) isComplete = false;
         }
 
         db[currentMachine] = {
@@ -1497,7 +1564,7 @@
             producedCartons: produced,
             stockRoof, stockSide, stockBottom,
             hasSheet,
-            sheetRolls: parseThousands(document.getElementById('sheetRolls').value),
+            sheetRolls,
             codes: {
                 roof: document.getElementById('codeRoof').value,
                 side: document.getElementById('codeSide').value,
