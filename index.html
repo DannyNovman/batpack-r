@@ -388,6 +388,35 @@
             color: var(--warning-text);
         }
 
+        .badge-codes {
+            background-color: var(--inactive-bg);
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        .codes-badge-wrap {
+            margin-top: 6px;
+        }
+        .codes-dropdown {
+            display: none;
+            margin-top: 6px;
+            padding: 8px 10px;
+            background: var(--codes-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .codes-badge-wrap.open .codes-dropdown {
+            display: block;
+        }
+        [data-theme="cyberpunk"] .badge-codes {
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            color: #00f0ff;
+        }
+
         [data-theme="cyberpunk"] .badge-teljes {
             box-shadow: 0 0 12px rgba(57, 255, 20, 0.55);
             border: 1px solid rgba(57, 255, 20, 0.5);
@@ -1001,6 +1030,7 @@
 <div id="numModalOverlay" class="num-modal-overlay" onclick="if(event.target===this) closeNumModal()">
     <div class="num-modal">
         <h3 id="numModalTitle">Érték</h3>
+        <div id="numModalCurrent" style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:10px; text-align:center;"></div>
         <input type="text" id="numModalInput" inputmode="decimal" placeholder="Szám..." autocomplete="off">
         <div class="num-modal-actions">
             <button type="button" class="btn btn-secondary" onclick="closeNumModal()">Mégse</button>
@@ -1125,20 +1155,25 @@
             let codesText = '';
             if (data.codes) {
                 const c = data.codes;
-                const parts = [];
-                if (c.roof) parts.push(`T:${c.roof}`);
-                if (c.side) parts.push(`O:${c.side}`);
-                if (c.bottom) parts.push(`A:${c.bottom}`);
-                if (c.sheet) parts.push(`L:${c.sheet}`);
-                if (c.carton) parts.push(`K:${c.carton}`);
-                if (c.foil) parts.push(`F:${c.foil}`);
-                if (c.tape) parts.push(`R:${c.tape}`);
-                if (c.cartonLabel) parts.push(`KC:${c.cartonLabel}`);
-                if (c.collectLabel) parts.push(`GC:${c.collectLabel}`);
-                if (parts.length) {
-                    codesText = `<div style="font-size:0.75rem; color:var(--text-secondary); margin-top:6px; border-top:1px dashed var(--border); padding-top:5px;">
-                        <strong>Cikkszámok:</strong> ${parts.join(' | ')}
-                    </div>`;
+                const items = [];
+                if (c.roof) items.push(`<div>Tető: <strong>${c.roof}</strong></div>`);
+                if (c.side) items.push(`<div>Oldal: <strong>${c.side}</strong></div>`);
+                if (c.bottom) items.push(`<div>Alj: <strong>${c.bottom}</strong></div>`);
+                if (c.sheet) items.push(`<div>Lepedő: <strong>${c.sheet}</strong></div>`);
+                if (c.carton) items.push(`<div>Karton: <strong>${c.carton}</strong></div>`);
+                if (c.foil) items.push(`<div>Fólia: <strong>${c.foil}</strong></div>`);
+                if (c.tape) items.push(`<div>Ragszalag: <strong>${c.tape}</strong></div>`);
+                if (c.cartonLabel) items.push(`<div>Kartoncímke: <strong>${c.cartonLabel}</strong></div>`);
+                if (c.collectLabel) items.push(`<div>Gyűjtőcímke: <strong>${c.collectLabel}</strong></div>`);
+                if (items.length) {
+                    codesText = `
+                        <div class="codes-badge-wrap" onclick="event.stopPropagation(); this.classList.toggle('open')">
+                            <span class="badge badge-codes">Cikkszámok (${items.length}) ▾</span>
+                            <div class="codes-dropdown">
+                                ${items.join('')}
+                            </div>
+                        </div>
+                    `;
                 }
             }
 
@@ -1368,8 +1403,11 @@
 
     let numModalCallback = null;
 
-    function openNumModal(title, callback) {
+    function openNumModal(title, callback, currentDisplay = '') {
         document.getElementById('numModalTitle').textContent = title;
+        const currentEl = document.getElementById('numModalCurrent');
+        currentEl.textContent = currentDisplay || '';
+        currentEl.style.display = currentDisplay ? 'block' : 'none';
         const input = document.getElementById('numModalInput');
         input.value = '';
         numModalCallback = callback;
@@ -1396,29 +1434,30 @@
     });
 
     function addToTarget() {
-        openNumModal('Mennyit adjon hozzá a tervhez?', (raw) => {
+        const el = document.getElementById('targetCartons');
+        const current = parseThousands(el.value);
+        const currentText = current ? `Jelenlegi terv: ${formatThousands(current)}` : 'Jelenlegi terv: üres';
+        openNumModal('Mennyit adjon hozzá?', (raw) => {
             if (!raw) return;
             const add = parseThousands(raw);
             if (add < 0) return;
-            const el = document.getElementById('targetCartons');
-            const current = parseThousands(el.value);
             el.value = formatThousands(current + add);
             calculate();
-        });
+        }, currentText);
     }
 
     function multiplyStock(inputId) {
-        openNumModal('Szorzó (pl. 2, 4, 1.5)', (raw) => {
+        const el = document.getElementById(inputId);
+        if (!el) return;
+        const current = parseThousands(el.value);
+        openNumModal('Szorzó', (raw) => {
             if (!raw) return;
             const mult = parseFloat(String(raw).replace(',', '.'));
             if (isNaN(mult) || mult <= 0) return;
-            const el = document.getElementById(inputId);
-            if (!el) return;
-            const current = parseThousands(el.value);
             const newVal = Math.round(current * mult);
             el.value = formatThousands(newVal);
             calculate();
-        });
+        }, 'Hány tekercs van?');
     }
 
     function calculate() {
