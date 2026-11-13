@@ -685,6 +685,43 @@
             margin-top: 6px;
             display: none;
         }
+
+        /* Action buttons inside inputs */
+        .input-action-wrap {
+            position: relative;
+        }
+        .input-action-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: var(--btn-text);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.15s;
+        }
+        .input-action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-50%) scale(1.08);
+        }
+        [data-theme="cyberpunk"] .input-action-btn {
+            background: linear-gradient(135deg, #00f0ff, #00c4d4);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            color: #05030a;
+        }
+        .input-action-wrap input {
+            padding-right: 40px;
+        }
     </style>
 </head>
 <body>
@@ -748,6 +785,19 @@
                 </div>
                 <div class="row-2">
                     <div class="form-group">
+                        <label for="targetCartons">Terv (Karton)</label>
+                        <div class="input-action-wrap">
+                            <input type="text" id="targetCartons" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                            <button type="button" class="input-action-btn" onclick="addToTarget()" title="Hozzáadás">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="producedCartons">Termelt (Karton)</label>
+                        <input type="text" id="producedCartons" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                    </div>
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
                         <label for="palletType">Raklap típusa</label>
                         <select id="palletType">
                             <option value="EU">EU</option>
@@ -759,16 +809,6 @@
                         <input type="number" id="palletHeight" min="1" max="15" inputmode="numeric" placeholder="">
                     </div>
                 </div>
-                <div class="row-2">
-                    <div class="form-group">
-                        <label for="targetCartons">Terv (Karton)</label>
-                        <input type="text" id="targetCartons" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
-                    </div>
-                    <div class="form-group">
-                        <label for="producedCartons">Termelt (Karton)</label>
-                        <input type="text" id="producedCartons" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
-                    </div>
-                </div>
 
                 <hr class="divider">
                 <div class="section-label">Komissziós kocsi készlet</div>
@@ -776,17 +816,26 @@
                 <div class="row-2">
                     <div class="form-group">
                         <label for="stockRoof">Tető címke (db)</label>
-                        <input type="text" id="stockRoof" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                        <div class="input-action-wrap">
+                            <input type="text" id="stockRoof" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                            <button type="button" class="input-action-btn" onclick="multiplyStock('stockRoof')" title="Szorzás">×</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="stockSide">Oldal címke (db)</label>
-                        <input type="text" id="stockSide" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                        <div class="input-action-wrap">
+                            <input type="text" id="stockSide" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                            <button type="button" class="input-action-btn" onclick="multiplyStock('stockSide')" title="Szorzás">×</button>
+                        </div>
                     </div>
                 </div>
                 <div class="row-2">
                     <div class="form-group">
                         <label for="stockBottom">Alj címke (db)</label>
-                        <input type="text" id="stockBottom" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                        <div class="input-action-wrap">
+                            <input type="text" id="stockBottom" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)">
+                            <button type="button" class="input-action-btn" onclick="multiplyStock('stockBottom')" title="Szorzás">×</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="sheet-box">
@@ -796,7 +845,10 @@
                             </div>
                             <div id="sheetContainer" style="display: none; margin-top: 8px;">
                                 <label for="sheetRolls" style="font-size:0.75rem;">Lepedő készlet (db)</label>
-                                <input type="text" id="sheetRolls" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)" style="padding: 7px 10px; font-size:0.88rem;">
+                                <div class="input-action-wrap">
+                                    <input type="text" id="sheetRolls" inputmode="numeric" placeholder="" oninput="onFormattedNumberInput(this)" style="padding: 7px 10px; font-size:0.88rem;">
+                                    <button type="button" class="input-action-btn" onclick="multiplyStock('sheetRolls')" title="Szorzás">×</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -847,12 +899,28 @@
                 <input type="text" id="codeBottom" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
+                <label>Lepedő cikkszám</label>
+                <input type="text" id="codeSheet" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
                 <label>Karton cikkszám</label>
                 <input type="text" id="codeCarton" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
             </div>
             <div class="form-group">
                 <label>Gyűjtőfólia cikkszám</label>
                 <input type="text" id="codeFoil" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Ragszalag cikkszám</label>
+                <input type="text" id="codeTape" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Kartoncímke cikkszám</label>
+                <input type="text" id="codeCartonLabel" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
+            </div>
+            <div class="form-group">
+                <label>Gyűjtőcímke cikkszám</label>
+                <input type="text" id="codeCollectLabel" inputmode="numeric" pattern="[0-9]*" placeholder="Cikkszám...">
             </div>
             <button type="button" class="btn" onclick="saveCodesAndReturn()">Cikkszámok mentése</button>
         </div>
@@ -945,10 +1013,23 @@
             const badgeClass = data.isComplete ? 'badge-teljes' : 'badge-hianyos';
 
             let codesText = '';
-            if (data.codes && (data.codes.roof || data.codes.side || data.codes.bottom || data.codes.carton || data.codes.foil)) {
-                codesText = `<div style="font-size:0.75rem; color:var(--text-secondary); margin-top:6px; border-top:1px dashed var(--border); padding-top:5px;">
-                    <strong>Cikkszámok:</strong> T:${data.codes.roof||'-'} | O:${data.codes.side||'-'} | A:${data.codes.bottom||'-'} | K:${data.codes.carton||'-'} | F:${data.codes.foil||'-'}
-                </div>`;
+            if (data.codes) {
+                const c = data.codes;
+                const parts = [];
+                if (c.roof) parts.push(`T:${c.roof}`);
+                if (c.side) parts.push(`O:${c.side}`);
+                if (c.bottom) parts.push(`A:${c.bottom}`);
+                if (c.sheet) parts.push(`L:${c.sheet}`);
+                if (c.carton) parts.push(`K:${c.carton}`);
+                if (c.foil) parts.push(`F:${c.foil}`);
+                if (c.tape) parts.push(`R:${c.tape}`);
+                if (c.cartonLabel) parts.push(`KC:${c.cartonLabel}`);
+                if (c.collectLabel) parts.push(`GC:${c.collectLabel}`);
+                if (parts.length) {
+                    codesText = `<div style="font-size:0.75rem; color:var(--text-secondary); margin-top:6px; border-top:1px dashed var(--border); padding-top:5px;">
+                        <strong>Cikkszámok:</strong> ${parts.join(' | ')}
+                    </div>`;
+                }
             }
 
             card.className = `machine-card ${statusClass}`;
@@ -1036,8 +1117,12 @@
                 document.getElementById('codeRoof').value = data.codes.roof || '';
                 document.getElementById('codeSide').value = data.codes.side || '';
                 document.getElementById('codeBottom').value = data.codes.bottom || '';
+                document.getElementById('codeSheet').value = data.codes.sheet || '';
                 document.getElementById('codeCarton').value = data.codes.carton || '';
                 document.getElementById('codeFoil').value = data.codes.foil || '';
+                document.getElementById('codeTape').value = data.codes.tape || '';
+                document.getElementById('codeCartonLabel').value = data.codes.cartonLabel || '';
+                document.getElementById('codeCollectLabel').value = data.codes.collectLabel || '';
             } else {
                 clearCodesInputs();
             }
@@ -1063,22 +1148,35 @@
     }
 
     function clearCodesInputs() {
-        ['codeRoof','codeSide','codeBottom','codeCarton','codeFoil'].forEach(id => {
-            document.getElementById(id).value = '';
+        ['codeRoof','codeSide','codeBottom','codeSheet','codeCarton','codeFoil','codeTape','codeCartonLabel','codeCollectLabel'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
         });
     }
 
     function updateCodesPreview() {
-        const r = document.getElementById('codeRoof').value;
-        const s = document.getElementById('codeSide').value;
-        const b = document.getElementById('codeBottom').value;
-        const c = document.getElementById('codeCarton').value;
-        const f = document.getElementById('codeFoil').value;
-        if (r || s || b || c || f) {
-            document.getElementById('codesPreviewText').innerHTML = `Tető: ${r||'-'} | Oldal: ${s||'-'} | Alj: ${b||'-'} | Karton: ${c||'-'} | Fólia: ${f||'-'}`;
-        } else {
-            document.getElementById('codesPreviewText').innerText = `Még nincsenek megadva`;
-        }
+        const codes = {
+            roof: document.getElementById('codeRoof')?.value || '',
+            side: document.getElementById('codeSide')?.value || '',
+            bottom: document.getElementById('codeBottom')?.value || '',
+            sheet: document.getElementById('codeSheet')?.value || '',
+            carton: document.getElementById('codeCarton')?.value || '',
+            foil: document.getElementById('codeFoil')?.value || '',
+            tape: document.getElementById('codeTape')?.value || '',
+            cartonLabel: document.getElementById('codeCartonLabel')?.value || '',
+            collectLabel: document.getElementById('codeCollectLabel')?.value || ''
+        };
+        const parts = [];
+        if (codes.roof) parts.push(`T:${codes.roof}`);
+        if (codes.side) parts.push(`O:${codes.side}`);
+        if (codes.bottom) parts.push(`A:${codes.bottom}`);
+        if (codes.sheet) parts.push(`L:${codes.sheet}`);
+        if (codes.carton) parts.push(`K:${codes.carton}`);
+        if (codes.foil) parts.push(`F:${codes.foil}`);
+        if (codes.tape) parts.push(`R:${codes.tape}`);
+        if (codes.cartonLabel) parts.push(`KC:${codes.cartonLabel}`);
+        if (codes.collectLabel) parts.push(`GC:${codes.collectLabel}`);
+        document.getElementById('codesPreviewText').innerHTML = parts.length ? parts.join(' | ') : 'Még nincsenek megadva';
     }
 
     function toggleSheetInput() {
@@ -1094,6 +1192,11 @@
                 el.disabled = isReadonly;
             }
         }
+        document.querySelectorAll('.input-action-btn').forEach(btn => {
+            btn.disabled = isReadonly;
+            btn.style.opacity = isReadonly ? '0.4' : '1';
+            btn.style.pointerEvents = isReadonly ? 'none' : 'auto';
+        });
         document.getElementById('saveBtn').style.display = isReadonly ? 'none' : 'block';
     }
 
@@ -1116,8 +1219,12 @@
             roof: document.getElementById('codeRoof').value,
             side: document.getElementById('codeSide').value,
             bottom: document.getElementById('codeBottom').value,
+            sheet: document.getElementById('codeSheet').value,
             carton: document.getElementById('codeCarton').value,
-            foil: document.getElementById('codeFoil').value
+            foil: document.getElementById('codeFoil').value,
+            tape: document.getElementById('codeTape').value,
+            cartonLabel: document.getElementById('codeCartonLabel').value,
+            collectLabel: document.getElementById('codeCollectLabel').value
         };
         try { localStorage.setItem('bat_logistics_data', JSON.stringify(db)); } catch(e) {}
         updateCodesPreview();
@@ -1146,6 +1253,30 @@
     function onFormattedNumberInput(el) {
         const raw = el.value.replace(/\D/g, '');
         el.value = formatThousands(raw);
+        calculate();
+    }
+
+    function addToTarget() {
+        const el = document.getElementById('targetCartons');
+        const current = parseThousands(el.value);
+        const addStr = prompt('Mennyit adjon hozzá a tervhez?', '0');
+        if (addStr === null) return;
+        const add = parseThousands(addStr);
+        if (add < 0) return;
+        el.value = formatThousands(current + add);
+        calculate();
+    }
+
+    function multiplyStock(inputId) {
+        const el = document.getElementById(inputId);
+        if (!el) return;
+        const current = parseThousands(el.value);
+        const multStr = prompt('Szorzó (pl. 2, 4, 1.5):', '1');
+        if (multStr === null) return;
+        const mult = parseFloat(String(multStr).replace(',', '.'));
+        if (isNaN(mult) || mult <= 0) return;
+        const newVal = Math.round(current * mult);
+        el.value = formatThousands(newVal);
         calculate();
     }
 
@@ -1281,8 +1412,12 @@
                 roof: document.getElementById('codeRoof').value,
                 side: document.getElementById('codeSide').value,
                 bottom: document.getElementById('codeBottom').value,
+                sheet: document.getElementById('codeSheet').value,
                 carton: document.getElementById('codeCarton').value,
-                foil: document.getElementById('codeFoil').value
+                foil: document.getElementById('codeFoil').value,
+                tape: document.getElementById('codeTape').value,
+                cartonLabel: document.getElementById('codeCartonLabel').value,
+                collectLabel: document.getElementById('codeCollectLabel').value
             },
             timestamp: timeString,
             isComplete
